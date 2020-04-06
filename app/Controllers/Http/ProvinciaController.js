@@ -23,7 +23,7 @@ class ProvinciaController {
   async index ({ request, response, view }) {
     try {
         
-      const provincia = await Provincia.query().fetch()
+      const provincia = await Provincia.query().with('municipios').fetch()
 
       if (!provincia) {
         return response.status(404).send({message: 'Nenhum registro encontrado'})
@@ -81,7 +81,7 @@ class ProvinciaController {
 
     try {
 
-      const provincia = await Provincia.query().where('id', params.id).first()
+      const provincia = await Provincia.query().with('municipios').where('id', params.id).first()
 
       if (!provincia) {
         return response.status(404).send({message: 'Nenhum registro encontrado'})

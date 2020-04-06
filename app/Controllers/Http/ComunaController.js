@@ -23,9 +23,10 @@ class ComunaController {
    */
   async index ({ request, response, view }) {
     try {
-      const comunas = await Database.select('id','nome', 'slug').from('comunas')
 
-      if (!comuna) {
+      const comunas = await Comuna.query().with('municipio').fetch()
+
+      if (!comunas) {
         return response.status(404).send({message: 'Nenhum registro encontrado'})
       }
 

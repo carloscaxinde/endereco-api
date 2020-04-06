@@ -24,11 +24,9 @@ class MunicipioController {
   async index ({ response }) {
    try {
      
-     //const municipio = await Municipio.query().fetch()
-    //const municipio = await Municipio.query().with('provincia').fetch()
-    const municipios = await Database.select('id','nome', 'slug').from('municipios')
+    const municipios = await Municipio.query().with('comunas').with('provincia').fetch()
 
-    if (!municipio) {
+    if (!municipios) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})
     }
 
@@ -90,7 +88,7 @@ class MunicipioController {
 
     try {
 
-      const municipio = await Municipio.query().where('id', params.id).first()
+      const municipio = await Municipio.query().with('comunas').with('provincia').where('id', params.id).first()
 
     if (!municipio) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})

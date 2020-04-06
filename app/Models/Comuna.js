@@ -5,8 +5,8 @@ const Model = use('Model')
 
 class Comuna extends Model {
 
-    comuna(){
-        return this.belongsTo('App/Models/Comuna')
+    municipio(){
+        return this.belongsTo('App/Models/Municipio')
     }
 }
 
