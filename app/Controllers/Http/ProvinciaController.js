@@ -21,9 +21,19 @@ class ProvinciaController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
-    const provincia = await Provincia.query().fetch()
+    try {
+        
+      const provincia = await Provincia.query().fetch()
 
-    return provincia
+      if (!provincia) {
+        return response.status(404).send({message: 'Nenhum registro encontrado'})
+      }
+
+      return provincia
+
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 
   /**
@@ -37,6 +47,16 @@ class ProvinciaController {
   async store ({ request, response }) {
 
     try {
+
+      const validation = await validateAll(request.all(),  {
+        nome: 'required|min:3|max:20|unique:provincias',
+        capital: 'required|min:3|max:20|unique:provincias',
+        regiao: 'required|min:3'
+    })
+
+    if (validation.fails()) {
+        return response.status(401).send({message: validation.messages()})
+    }
           const dados = request.only(['nome', 'slug', 'capital', 'regiao'])
           
           const provincia = Provincia.create(dados)
@@ -59,13 +79,21 @@ class ProvinciaController {
    */
   async show ({ params, request, response }) {
 
-    const provincia = await Provincia.query().where('id', params.id).first()
+    try {
 
-    if (!provincia) {
-      return response.status(404).send({message: 'Nenhum registro encontrado'})
+      const provincia = await Provincia.query().where('id', params.id).first()
+
+      if (!provincia) {
+        return response.status(404).send({message: 'Nenhum registro encontrado'})
+      }
+
+      return provincia
+      
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
     }
 
-    return provincia
+    
   }
 
 
@@ -79,7 +107,19 @@ class ProvinciaController {
    */
   async update ({ params, request, response }) {
 
-    const {nome, slug, capital, regiao} = request.all()
+    try {
+
+      const validation = await validateAll(request.all(),  {
+        nome: 'min:3|max:20|unique:provincias',
+        capital: 'min:3|max:20|unique:provincias',
+        regiao: 'min:3'
+    })
+
+    if (validation.fails()) {
+        return response.status(401).send({message: validation.messages()})
+    }
+
+      const {nome, slug, capital, regiao} = request.all()
 
     const provincia = await Provincia.query().where('id', params.id).first()
 
@@ -94,7 +134,13 @@ class ProvinciaController {
 
     await provincia.save()
 
-    return provincia  
+    return provincia 
+      
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
+
+     
   }
 
   /**
@@ -106,7 +152,9 @@ class ProvinciaController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, response }) {
-    const provincia = await Provincia.query().where('id', params.id).first()
+    try {
+      
+      const provincia = await Provincia.query().where('id', params.id).first()
 
     if (!provincia) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})
@@ -115,6 +163,9 @@ class ProvinciaController {
     await provincia.delete()
 
     return response.status(200).send({message: 'Deletado com sucesse'})
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 }
 

@@ -2,6 +2,7 @@
 
 const Municipio = use('App/Models/Municipio')
 const Database = use('Database')
+const  { validateAll } = use('Validator')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -20,16 +21,26 @@ class MunicipioController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response }) {
-    //const municipio = await Municipio.query().fetch()
+  async index ({ response }) {
+   try {
+     
+     //const municipio = await Municipio.query().fetch()
     //const municipio = await Municipio.query().with('provincia').fetch()
     const municipios = await Database.select('id','nome', 'slug').from('municipios')
 
+    if (!municipio) {
+      return response.status(404).send({message: 'Nenhum registro encontrado'})
+    }
+
     return municipios
+
+   } catch (error) {
+    return response.status(500).send( {error: 'Erro: ${err.message}'} )
+   }
   }
 
   async municipioProvincia(params){
-    
+
     const municipios = await Database.select('id','nome', 'slug').from('municipios').where('provincia_id', params.id)
 
     return municipios
@@ -45,6 +56,15 @@ class MunicipioController {
    */
   async store ({ request, response }) {
     try {
+
+      const validation = await validateAll(request.all(),  {
+        nome: 'required|min:3|max:30|unique:municipios',
+        provincia_id: 'required|number'
+    })
+
+    if (validation.fails()) {
+      return response.status(401).send({message: validation.messages()})
+  }
 
       const dados = request.only(['nome', 'slug', 'provincia_id'])
       
@@ -68,13 +88,19 @@ class MunicipioController {
    */
   async show ({ params, response }) {
 
-    const municipio = await Municipio.query().where('id', params.id).first()
+    try {
+
+      const municipio = await Municipio.query().where('id', params.id).first()
 
     if (!municipio) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})
     }
 
     return municipio
+      
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 
 
@@ -88,7 +114,8 @@ class MunicipioController {
    */
   async update ({ params, request, response }) {
 
-    const {nome, slug, provincia_id} = request.all()
+    try {
+      const {nome, slug, provincia_id} = request.all()
 
     const municipio = await Municipio.query().where('id', params.id).first()
 
@@ -103,6 +130,9 @@ class MunicipioController {
     await municipio.save()
 
     return municipio
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 
   /**
@@ -115,7 +145,8 @@ class MunicipioController {
    */
   async destroy ({ params, request, response }) {
 
-    const municipio = await Municipio.query().where('id', params.id).first()
+    try {
+      const municipio = await Municipio.query().where('id', params.id).first()
 
     if (!municipio) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})
@@ -124,6 +155,9 @@ class MunicipioController {
     await municipio.delete()
 
     return response.status(200).send({message: 'Deletado com sucesse'})
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 }
 

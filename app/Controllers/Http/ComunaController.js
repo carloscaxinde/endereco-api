@@ -2,6 +2,7 @@
 
 const Comuna = use('App/Models/Comuna')
 const Database = use('Database')
+const  { validateAll } = use('Validator')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -21,9 +22,18 @@ class ComunaController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
-    const comunas = await Database.select('id','nome', 'slug').from('comunas')
+    try {
+      const comunas = await Database.select('id','nome', 'slug').from('comunas')
 
-    return comunas
+      if (!comuna) {
+        return response.status(404).send({message: 'Nenhum registro encontrado'})
+      }
+
+      return comunas
+
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 
   /**
@@ -37,6 +47,15 @@ class ComunaController {
   async store ({ request, response }) {
 
     try {
+
+      const validation = await validateAll(request.all(),  {
+        nome: 'required|min:3|max:30|unique:comunas',
+        municipio_id: 'required|number'
+    })
+
+    if (validation.fails()) {
+      return response.status(401).send({message: validation.messages()})
+  }
 
       const dados = request.only(['nome', 'slug', 'municipio_id'])
       
@@ -60,13 +79,18 @@ class ComunaController {
    */
   async show ({ params, request, response }) {
 
-    const comuna = await Comuna.query().where('id', params.id).first()
+    try {
+      const comuna = await Comuna.query().where('id', params.id).first()
 
     if (!comuna) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})
     }
 
     return comuna
+    } catch (error) {
+  return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      
+    }
   }
 
   /**
@@ -79,7 +103,8 @@ class ComunaController {
    */
   async update ({ params, request, response }) {
 
-    const {nome, slug, municipio_id} = request.all()
+    try {
+      const {nome, slug, municipio_id} = request.all()
 
     const comuna = await Comuna.query().where('id', params.id).first()
 
@@ -94,6 +119,9 @@ class ComunaController {
     await comuna.save()
 
     return comuna
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 
   /**
@@ -106,7 +134,8 @@ class ComunaController {
    */
   async destroy ({ params, request, response }) {
 
-    const comuna = await Comuna.query().where('id', params.id).first()
+    try {
+      const comuna = await Comuna.query().where('id', params.id).first()
 
     if (!comuna) {
       return response.status(404).send({message: 'Nenhum registro encontrado'})
@@ -115,6 +144,9 @@ class ComunaController {
     await comuna.delete()
 
     return response.status(200).send({message: 'Deletado com sucesse'})
+    } catch (error) {
+      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    }
   }
 }
 
