@@ -27,10 +27,13 @@ class ComunaController {
       const comunas = await Comuna.query().with('municipio').fetch()
 
       if (!comunas) {
-        return response.status(404).send({message: 'Nenhum registro encontrado'})
+        return response.header('Content-type', 'application/json')
+                        .status(404)
+                        .send({message: 'Nenhum registro encontrado'})
       }
 
-      return comunas
+      return response.json(comunas)
+                      
 
     } catch (error) {
       return response.status(500).send( {error: 'Erro: ${err.message}'} )
