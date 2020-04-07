@@ -17,9 +17,7 @@
 const Route = use('Route')
 
 Route.resource('provincia', 'ProvinciaController').apiOnly
-Route.resource('municipio', 'MunicipioController')
-Route.resource('comuna', 'ComunaController')
+Route.resource('municipio', 'MunicipioController').apiOnly()
+Route.resource('comuna', 'ComunaController').apiOnly()
 
-
-Route.get('municipio-provincia/:id', 'MunicipioController.municipioProvincia')
 
