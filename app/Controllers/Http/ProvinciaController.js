@@ -15,12 +15,9 @@ class ProvinciaController {
    * Show a list of all provincias.
    * GET provincias
    *
-   * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index ({ response }) {
     try {
         
       const provincia = await Provincia.query().with('municipios').fetch()
@@ -32,7 +29,7 @@ class ProvinciaController {
       return provincia
 
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 
@@ -41,7 +38,6 @@ class ProvinciaController {
    * POST provincias
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
@@ -57,14 +53,14 @@ class ProvinciaController {
     if (validation.fails()) {
         return response.status(401).send({message: validation.messages()})
     }
-          const dados = request.only(['nome', 'slug', 'capital', 'regiao'])
+          const dados = request.only(['nome', 'capital', 'regiao'])
           
           const provincia = Provincia.create(dados)
 
           return provincia
 
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 
@@ -73,11 +69,9 @@ class ProvinciaController {
    * GET provincias/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async show ({ params, request, response }) {
+  async show ({ params, response }) {
 
     try {
 
@@ -90,7 +84,7 @@ class ProvinciaController {
       return provincia
       
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
 
     
@@ -119,7 +113,7 @@ class ProvinciaController {
         return response.status(401).send({message: validation.messages()})
     }
 
-      const {nome, slug, capital, regiao} = request.all()
+      const {nome, capital, regiao} = request.all()
 
     const provincia = await Provincia.query().where('id', params.id).first()
 
@@ -128,7 +122,6 @@ class ProvinciaController {
     }
 
     provincia.nome = nome
-    provincia.slug = slug
     provincia.capital = capital
     provincia.regiao = regiao
 
@@ -137,7 +130,7 @@ class ProvinciaController {
     return provincia 
       
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
 
      
@@ -148,7 +141,6 @@ class ProvinciaController {
    * DELETE provincias/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
   async destroy ({ params, response }) {
@@ -164,7 +156,7 @@ class ProvinciaController {
 
     return response.status(200).send({message: 'Deletado com sucesse'})
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 }

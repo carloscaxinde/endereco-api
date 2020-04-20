@@ -8,10 +8,9 @@ class ProvinciaSchema extends Schema {
     this.create('provincias', (table) => {
       table.increments()
       table.string('nome', 45).notNullable().unique()
-      table.string('slug', 45).notNullable().unique()
       table.string('capital', 45).notNullable().unique()
       table.enu('regiao', ['Este', 'Norte', 'Oeste', 'Sul'])
-      table.timestamps()
+     
     })
   }
 

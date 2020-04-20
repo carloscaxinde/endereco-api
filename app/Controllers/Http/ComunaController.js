@@ -16,12 +16,9 @@ class ComunaController {
    * Show a list of all comunas.
    * GET comunas
    *
-   * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index ({ response }) {
     try {
 
       const comunas = await Comuna.query().with('municipio').fetch()
@@ -36,7 +33,7 @@ class ComunaController {
                       
 
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 
@@ -44,7 +41,6 @@ class ComunaController {
    * Create/save a new comuna.
    * POST comunas
    *
-   * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
@@ -61,14 +57,14 @@ class ComunaController {
       return response.status(401).send({message: validation.messages()})
   }
 
-      const dados = request.only(['nome', 'slug', 'municipio_id'])
+      const dados = request.only(['nome', 'municipio_id'])
       
       const comuna = Comuna.create(dados)
 
       return comuna
 
 } catch (error) {
-  return response.status(500).send( {error: 'Erro: ${err.message}'} )
+  return response.status(500).send( {error: error.message} )
 }
   }
 
@@ -76,12 +72,10 @@ class ComunaController {
    * Display a single comuna.
    * GET comunas/:id
    *
-   * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async show ({ params, request, response }) {
+  async show ({ params, response }) {
 
     try {
       const comuna = await Comuna.query().where('id', params.id).first()
@@ -92,7 +86,7 @@ class ComunaController {
 
     return comuna
     } catch (error) {
-  return response.status(500).send( {error: 'Erro: ${err.message}'} )
+  return response.status(500).send( {error: error.message} )
       
     }
   }
@@ -108,7 +102,7 @@ class ComunaController {
   async update ({ params, request, response }) {
 
     try {
-      const {nome, slug, municipio_id} = request.all()
+      const {nome, municipio_id} = request.all()
 
     const comuna = await Comuna.query().where('id', params.id).first()
 
@@ -117,14 +111,13 @@ class ComunaController {
     }
 
     comuna.nome = nome
-    comuna.slug = slug
     comuna.municipio_id = municipio_id
 
     await comuna.save()
 
     return comuna
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 
@@ -133,10 +126,9 @@ class ComunaController {
    * DELETE comunas/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy ({ params, response }) {
 
     try {
       const comuna = await Comuna.query().where('id', params.id).first()
@@ -149,7 +141,7 @@ class ComunaController {
 
     return response.status(200).send({message: 'Deletado com sucesse'})
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 }

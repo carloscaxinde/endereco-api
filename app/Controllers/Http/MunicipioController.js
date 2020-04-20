@@ -16,10 +16,7 @@ class MunicipioController {
    * Show a list of all municipios.
    * GET municipios
    *
-   * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
   async index ({ response }) {
    try {
@@ -33,22 +30,14 @@ class MunicipioController {
     return municipios
 
    } catch (error) {
-    return response.status(500).send( {error: 'Erro: ${err.message}'} )
+    return response.status(500).send( {error: error.message} )
    }
-  }
-
-  async municipioProvincia(params){
-
-    const municipios = await Database.select('id','nome', 'slug').from('municipios').where('provincia_id', params.id)
-
-    return municipios
   }
 
   /**
    * Create/save a new municipio.
    * POST municipios
    *
-   * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
@@ -64,14 +53,14 @@ class MunicipioController {
       return response.status(401).send({message: validation.messages()})
   }
 
-      const dados = request.only(['nome', 'slug', 'provincia_id'])
+      const dados = request.only(['nome', 'provincia_id'])
       
       const municipio = Municipio.create(dados)
 
       return municipio
 
 } catch (error) {
-  return response.status(500).send( {error: 'Erro: ${err.message}'} )
+  return response.status(500).send( {error: error.message} )
 }
   }
 
@@ -80,9 +69,7 @@ class MunicipioController {
    * GET municipios/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
   async show ({ params, response }) {
 
@@ -97,7 +84,7 @@ class MunicipioController {
     return municipio
       
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 
@@ -113,7 +100,7 @@ class MunicipioController {
   async update ({ params, request, response }) {
 
     try {
-      const {nome, slug, provincia_id} = request.all()
+      const {nome, provincia_id} = request.all()
 
     const municipio = await Municipio.query().where('id', params.id).first()
 
@@ -122,14 +109,13 @@ class MunicipioController {
     }
 
     municipio.nome = nome
-    municipio.slug = slug
     municipio.provincia_id = provincia_id
 
     await municipio.save()
 
     return municipio
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 
@@ -138,10 +124,9 @@ class MunicipioController {
    * DELETE municipios/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy ({ params, response }) {
 
     try {
       const municipio = await Municipio.query().where('id', params.id).first()
@@ -154,7 +139,7 @@ class MunicipioController {
 
     return response.status(200).send({message: 'Deletado com sucesse'})
     } catch (error) {
-      return response.status(500).send( {error: 'Erro: ${err.message}'} )
+      return response.status(500).send( {error: error.message} )
     }
   }
 }
