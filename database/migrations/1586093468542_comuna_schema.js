@@ -9,6 +9,7 @@ class ComunaSchema extends Schema {
       table.increments()
       table.string('nome', 45).notNullable().unique()
       table.integer('municipio_id').unsigned().references('id').inTable('municipios').onUpdate('CASCADE').onDelete('CASCADE')
+      table.timestamps()
     })
   }
 
