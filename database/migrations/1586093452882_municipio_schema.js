@@ -9,7 +9,7 @@ class MunicipioSchema extends Schema {
       table.increments()
       table.string('nome', 45).notNullable().unique()
       table.integer('provincia_id').unsigned().references('id').inTable('provincias').onUpdate('CASCADE').onDelete('CASCADE')
-      
+      table.timestamps()
     })
   }
 
