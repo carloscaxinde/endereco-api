@@ -9,7 +9,7 @@ class ProvinciaSchema extends Schema {
       table.increments()
       table.string('nome', 45).notNullable().unique()
       table.string('capital', 45).notNullable().unique()
-      table.enu('regiao', ['Este', 'Norte', 'Oeste', 'Sul'])
+      table.string('regiao')
       table.timestamps()
     })
   }
